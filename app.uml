@@ -1,0 +1,12 @@
+@startuml
+title: Elixir CLI app startup
+
+note right: Either through mix/iex or escript
+(*) --> [Application.start] Application
+
+note right: Application here means an OTP Application
+Application --> [Supervisor.start_link] Supervisor
+
+note right: Starting a Supervisor automatically starts its children
+Supervisor --> TUI
+@enduml
