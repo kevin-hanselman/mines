@@ -45,12 +45,15 @@ defmodule Mines.TUI do
   # Main actions
   #
   def move_cursor(key, state = %__MODULE__{cursor_row_col: [row, col]}) do
-    case key do
-      :up    -> %{ state | cursor_row_col: [row - 1, col] }
-      :down  -> %{ state | cursor_row_col: [row + 1, col] }
-      :right -> %{ state | cursor_row_col: [row, col + 1] }
-      :left  -> %{ state | cursor_row_col: [row, col - 1] }
-    end
+    %{ state | cursor_row_col:
+      case key do
+        :up    -> [row - 1, col]
+        :down  -> [row + 1, col]
+        :right -> [row, col + 1]
+        :left  -> [row, col - 1]
+      end
+      |> Enum.map( &rem(&1, state.game.size) )
+    }
   end
 
   def reveal_cell(state = %__MODULE__{}) do
