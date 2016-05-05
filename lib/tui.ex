@@ -75,7 +75,7 @@ defmodule Mines.TUI do
   defp print_board(state) do
     clear_screen
     IO.write [?\r, ?\n]
-    Formatter.format_board(state.game, state.cursor_row_col) |> IO.write
+    IO.write Formatter.format_board(state.game, state.cursor_row_col)
   end
 
   defp translate("\e[A"), do: :up

@@ -39,7 +39,8 @@ defmodule Mines.Game do
   end
 
   def victory?(game = %__MODULE__{}) do
-    not Enum.any?(game.board, fn(char) -> char == ?- or char == ?X end)
+    (not Enum.any?(game.board, fn(char) -> char == ?- or char == ?X end)) and
+    Enum.count(game.board, fn(char) -> char == ?! end) == game.num_mines
   end
 
   #

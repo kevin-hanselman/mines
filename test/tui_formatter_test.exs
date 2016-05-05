@@ -41,7 +41,7 @@ defmodule Mines.TUI.Formatter.Test do
     |> to_string
     assert board == to_string(
       [" \e[7m-\e[0m - - - -", "\r\n",
-       " - - \e[1m\e[30m0\e[0m - -", "\r\n",
+       " - - \e[1m\e[30m/\e[0m - -", "\r\n",
        " - - \e[1m\e[34m1\e[0m - -", "\r\n",
        " - - \e[1m\e[32m2\e[0m - -", "\r\n",
        " - - \e[1m\e[31m3\e[0m - -", "\r\n"])

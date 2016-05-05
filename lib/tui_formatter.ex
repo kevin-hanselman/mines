@@ -31,22 +31,8 @@ defmodule Mines.TUI.Formatter do
       ?7 -> ANSI.format([" ", :bright, :yellow, cell])
       ?8 -> ANSI.format([" ", :bright, :white, cell])
       ?X -> ANSI.format([" ", :blink_slow, :inverse, :red, cell])
+      ?! -> ANSI.format([" ", :inverse, :red, cell])
       _ -> [" ", cell]
     end
   end
-  #defp format_board_cell(cell) do
-    #case cell do
-      #?0 -> ANSI.format([" ", :bright, :black, ?/])
-      #?1 -> ANSI.format([" ", :bright, :blue, cell])
-      #?2 -> ANSI.format([" ", :bright, :green, cell])
-      #?3 -> ANSI.format([" ", :bright, :red, cell])
-      #?4 -> ANSI.format([" ", :blue, cell])
-      #?5 -> ANSI.format([" ", :red, cell])
-      #?6 -> ANSI.format([" ", :bright, :cyan, cell])
-      #?7 -> ANSI.format([" ", :bright, :yellow, cell])
-      #?8 -> ANSI.format([" ", :underline, :red, cell])
-      #?X -> ANSI.format([" ", :blink_slow, :inverse, :red, cell])
-      #_ -> [" ", cell]
-    #end
-  #end
 end

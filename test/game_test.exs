@@ -107,7 +107,8 @@ defmodule Mines.Game.Test do
 
   test "a game over cannot also be a victory" do
     game_over = %Game{ board: List.flatten([ 'X----', '-----', '-----', '-----', '-----' ]) }
-    assert (not Game.victory?(game_over)) and Game.game_over?(game_over)
+    assert not Game.victory?(game_over)
+    assert Game.game_over?(game_over)
   end
 
   test "victory when the board has all non-bomb cells revealed and all bombs marked", %{game: game} do
@@ -116,9 +117,16 @@ defmodule Mines.Game.Test do
       )
   end
 
-  test "a victory cannot also be a game over" do
-    victory_game = %Game{ board: List.flatten([ '!1011', '1101!', '12221', '1!!10', '12210' ]) }
-    assert (not Game.game_over?(victory_game)) and Game.victory?(victory_game)
+  test "victory not allowed when there aren't as many flags as bombs", %{game: game} do
+    assert not Game.victory?(
+      %{game | board: List.flatten(['!!100', '3!200', '2!221', '1111!', '00011']) }
+    )
+  end
+
+  test "a victory cannot also be a game over", %{game: game} do
+    victory_game = %{game | board: List.flatten(['!2100', '3!200', '2!221', '1111!', '00011']) }
+    assert not Game.game_over?(victory_game)
+    assert Game.victory?(victory_game)
   end
 
 end
