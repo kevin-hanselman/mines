@@ -34,6 +34,8 @@ defmodule Mines.TUI do
     new_state = cond do
       key in [:up, :down, :left, :right] -> move_cursor(key, state)
       key == :space -> reveal_cell(state)
+      key == :b -> toggle_bomb(state)
+      true -> state
     end
     print_board(new_state)
     {:noreply, new_state}
@@ -56,6 +58,10 @@ defmodule Mines.TUI do
     %{ state | game: new_game }
   end
 
+  def toggle_bomb(state = %__MODULE__{}) do
+    %{ state | game: Game.toggle_bomb(state.cursor_row_col, state.game) }
+  end
+
   #
   # Other functions
   #
@@ -65,8 +71,7 @@ defmodule Mines.TUI do
 
   defp print_board(state) do
     clear_screen
-    IO.inspect state.game.mine_locs
-    IO.write [?\n, ?\r]
+    IO.write [?\r, ?\n]
     Formatter.format_board(state.game, state.cursor_row_col) |> IO.write
   end
 
@@ -75,6 +80,7 @@ defmodule Mines.TUI do
   defp translate("\e[C"), do: :right
   defp translate("\e[D"), do: :left
   defp translate(" "), do: :space
+  defp translate("b"), do: :b
   defp translate(_), do: nil
 
 end

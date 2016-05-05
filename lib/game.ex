@@ -25,6 +25,15 @@ defmodule Mines.Game do
     end
   end
 
+  def toggle_bomb([row, col], game = %__MODULE__{}) do
+    idx = row_col_to_index([row, col], game.size)
+    cond do
+      Enum.at(game.board, idx) == ?! -> %{ game | board: game.board |> List.replace_at(idx, ?-) }
+      cell_revealed?(idx, game) -> game
+      true -> %{ game | board: game.board |> List.replace_at(idx, ?!) }
+    end
+  end
+
   def game_over?(game = %__MODULE__{}) do
     ?X in game.board
   end
