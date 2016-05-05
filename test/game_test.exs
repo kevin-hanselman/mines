@@ -49,6 +49,13 @@ defmodule Mines.Game.Test do
     assert Game.row_col_to_index([4, 4], size) == 24
   end
 
+  test "negative row or col also work" do
+    size = 5
+    assert Game.row_col_to_index([-1, -1], size) == 24
+    assert Game.row_col_to_index([0, -2], size) == 3
+    assert Game.row_col_to_index([-2, 0], size) == 15
+  end
+
   test "given index, can find neighboring indices" do
     size = 5
     assert Game.get_neighbor_indices(0, size) == [1, 5, 6]

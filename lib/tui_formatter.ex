@@ -12,7 +12,24 @@ defmodule Mines.TUI.Formatter do
     |> List.replace_at(row_idx,
                        List.replace_at(row, col_idx, cursor)
                        )
-    |> Enum.map( &[format_board_row(&1), "\r\n"] )
+    |> Enum.map( &[" ", format_board_row(&1), "\r\n"] )
+  end
+
+  def format_board(game = %Game{}) do
+    Enum.chunk(game.board, game.size)
+    |> Enum.map( &[" ", format_board_row(&1), "\r\n"] )
+  end
+
+  def victory(game = %Game{}) do
+    board_with_message(game, "  VICTORY!")
+  end
+
+  def game_over(game = %Game{}) do
+    board_with_message(game, "  GAME OVER")
+  end
+
+  defp board_with_message(game = %Game{}, string) do
+    [format_board(game), "\r\n", string]
   end
 
   defp format_board_row(row) do

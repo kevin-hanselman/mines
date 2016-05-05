@@ -37,7 +37,12 @@ defmodule Mines.TUI do
       key == :b -> toggle_bomb(state)
       true -> state
     end
-    print_board(new_state)
+    cond do
+      Game.game_over?(new_state.game) -> print_game_over(new_state)
+      Game.victory?(new_state.game) -> print_victory(new_state)
+      new_state != state -> print_board(new_state)
+      true -> nil
+    end
     {:noreply, new_state}
   end
 
@@ -57,8 +62,7 @@ defmodule Mines.TUI do
   end
 
   def reveal_cell(state = %__MODULE__{}) do
-    new_game = Game.reveal(state.cursor_row_col, state.game)
-    %{ state | game: new_game }
+    %{ state | game: Game.reveal(state.cursor_row_col, state.game) }
   end
 
   def toggle_bomb(state = %__MODULE__{}) do
@@ -70,12 +74,22 @@ defmodule Mines.TUI do
   #
   defp clear_screen do
     IO.write [IO.ANSI.clear, IO.ANSI.home]
+    IO.write [?\r, ?\n]
   end
 
   defp print_board(state) do
     clear_screen
-    IO.write [?\r, ?\n]
     IO.write Formatter.format_board(state.game, state.cursor_row_col)
+  end
+
+  defp print_victory(state) do
+    clear_screen
+    IO.write Formatter.victory(state.game)
+  end
+
+  defp print_game_over(state) do
+    clear_screen
+    IO.write Formatter.game_over(state.game)
   end
 
   defp translate("\e[A"), do: :up

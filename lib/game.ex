@@ -85,6 +85,7 @@ defmodule Mines.Game do
   end
 
   def row_col_to_index([row, col], size) do
+    [row, col] = Enum.map([row, col], &(if &1 < 0, do: &1 + size, else: &1) )
     size * row + col
   end
 
