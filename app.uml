@@ -1,12 +1,13 @@
 @startuml
 title: Elixir CLI app startup
-
 note right: Either through mix/iex or escript
+
 (*) --> [Application.start] Application
-
 note right: Application here means an OTP Application
-Application --> [Supervisor.start_link] Supervisor
 
+Application --> [Supervisor.start_link] Supervisor
 note right: Starting a Supervisor automatically starts its children
+
 Supervisor --> TUI
+note right: An OTP GenServer that maintains a Mines.Game struct
 @enduml
