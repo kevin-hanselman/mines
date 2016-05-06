@@ -1,20 +1,28 @@
 # Mines
 
-**TODO: Add description**
+A minesweeper clone in the terminal, written in Elixir.
 
-## Installation
+I'm building this to learn Elixir and as an exercise in test-driven development.
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
+## Building
 
-  1. Add mines to your list of dependencies in `mix.exs`:
+Mines is meant to be run as a standalone BEAM executable:
 
-        def deps do
-          [{:mines, "~> 0.0.1"}]
-        end
+    mix escript.build
 
-  2. Ensure mines is started before your application:
+## Playing Mines
 
-        def application do
-          [applications: [:mines]]
-        end
+To play the game with default settings, run:
 
+    ./mines
+
+Currently, you can also pass two arguments to the game:
+
+    ./mines --size 10 --mines 12
+
+### Controls
+
+* The arrow keys move the cursor. The cursor wraps around the edges of the board.
+* The space bar reveals a cell.
+* The 'b' key toggles marking a cell as a bomb.
+* Control-C exits the game. (You'll probably need to call `reset` afterwards.)
