@@ -1,15 +1,13 @@
 defmodule Mines.Game do
 
   # TODO: remove num_mines member, make it a param to init
-  defstruct board: [], size: nil, num_mines: nil, mine_locs: []
+  defstruct board: [], size: nil, num_mines: nil, mine_locs: [], start_time: nil
 
   #
   # Public API
   #
   def init(game = %__MODULE__{}) do
-    game
-    |> init_board
-    |> init_mines
+    %{ game |> init_board |> init_mines | start_time: System.monotonic_time }
   end
 
   def reveal([row, col], game = %__MODULE__{}) do
@@ -28,7 +26,7 @@ defmodule Mines.Game do
   def toggle_bomb([row, col], game = %__MODULE__{}) do
     idx = row_col_to_index([row, col], game.size)
     cond do
-      Enum.at(game.board, idx) == ?! -> %{ game | board: game.board |> List.replace_at(idx, ?-) }
+      cell_marked?(idx, game) -> %{ game | board: game.board |> List.replace_at(idx, ?-) }
       cell_revealed?(idx, game) -> game
       true -> %{ game | board: game.board |> List.replace_at(idx, ?!) }
     end
@@ -41,6 +39,10 @@ defmodule Mines.Game do
   def victory?(game = %__MODULE__{}) do
     (not Enum.any?(game.board, fn(char) -> char == ?- or char == ?X end)) and
     Enum.count(game.board, fn(char) -> char == ?! end) == game.num_mines
+  end
+
+  def count_remaining_bombs(game = %__MODULE__{}) do
+    length(game.mine_locs) - Enum.count(game.board, fn(char) -> char == ?! end)
   end
 
   #
@@ -61,10 +63,12 @@ defmodule Mines.Game do
     Enum.at(game.board, idx) != ?-
   end
 
+  defp cell_marked?(idx, game = %__MODULE__{}) do
+    Enum.at(game.board, idx) == ?!
+  end
+
   defp init_board(game = %__MODULE__{}) do
-    %{ game |
-      board: List.duplicate(?-, game.size*game.size)
-    }
+    %{ game | board: List.duplicate(?-, game.size*game.size) }
   end
 
   defp init_mines(game = %__MODULE__{}) do
@@ -85,6 +89,7 @@ defmodule Mines.Game do
   end
 
   def row_col_to_index([row, col], size) do
+    # translate negative indices into their positive (actual) values
     [row, col] = Enum.map([row, col], &(if &1 < 0, do: &1 + size, else: &1) )
     size * row + col
   end
@@ -101,7 +106,11 @@ defmodule Mines.Game do
       [ r+1, c ],
       [ r+1, c+1 ]
     ]
-    Enum.filter(neighbor_idx, fn([r,c]) -> r >= 0 and r < size and c >= 0 and c < size end)
+    Enum.filter(neighbor_idx,
+      fn([r,c]) ->
+        r >= 0 and r < size and c >= 0 and c < size
+      end
+    )
     |> Enum.map( &row_col_to_index(&1, size) )
   end
 

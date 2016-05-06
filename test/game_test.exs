@@ -81,6 +81,16 @@ defmodule Mines.Game.Test do
 - - - - -)
   end
 
+  test "can get the number of remaining bombs", %{game: game} do
+    assert %{ game | board: List.flatten(['!----', '-----', '-----', '-!!--', '-----']) }
+           |> Game.count_remaining_bombs == 1
+  end
+
+  test "number of remaining bombs can be negative", %{game: game} do
+    assert %{ game | board: List.flatten(['!!!!!', '-----', '-----', '-!!--', '-----']) }
+           |> Game.count_remaining_bombs == -3
+  end
+
   test "revealing a cell with a mine shows that cell", %{game: game} do
     assert Game.reveal(0, game).board ==
       List.flatten([ 'X----', '-----', '-----', '-----', '-----' ])
@@ -106,6 +116,23 @@ defmodule Mines.Game.Test do
                      '0001-' ])
   end
 
+  test "marking a non-revealed cell as a bomb shows a flag", %{game: game} do
+    assert Game.toggle_bomb([0, 0], game).board ==
+      List.flatten([ '!----', '-----', '-----', '-----', '-----' ])
+  end
+
+  test "marking an already marked cell unmarks that cell" do
+    marked_game = %Game{ size: 3, board: List.flatten([ '!--', '---', '---' ]) }
+    assert Game.toggle_bomb([0, 0], marked_game).board ==
+      List.flatten([ '---', '---', '---' ])
+  end
+
+  test "marking a revealed cell does nothing" do
+    game = %Game{ size: 3, board: List.flatten([ '1--', '---', '---' ]) }
+    assert Game.toggle_bomb([0, 0], game).board ==
+      List.flatten([ '1--', '---', '---' ])
+  end
+
   test "game over when the board has at least one X", %{game: game} do
     assert Game.game_over?(
       %{game | board: List.flatten([ 'X----', '-----', '-----', '-----', '-----' ]) }
@@ -113,7 +140,7 @@ defmodule Mines.Game.Test do
   end
 
   test "a game over cannot also be a victory" do
-    game_over = %Game{ board: List.flatten([ 'X----', '-----', '-----', '-----', '-----' ]) }
+    game_over = %Game{ size: 3, board: List.flatten([ 'X!!', '!!!', '!!!' ]) }
     assert not Game.victory?(game_over)
     assert Game.game_over?(game_over)
   end

@@ -30,25 +30,25 @@ defmodule Mines.TUI do
 
   # callback for the Erlang Port
   def handle_info({_pid, {:data, data}}, state) do
-    key = translate(data)
-    new_state = cond do
-      key in [:up, :down, :left, :right] -> move_cursor(key, state)
-      key == :space -> reveal_cell(state)
-      key == :b -> toggle_bomb(state)
-      true -> state
-    end
-    cond do
-      Game.game_over?(new_state.game) -> print_game_over(new_state)
-      Game.victory?(new_state.game) -> print_victory(new_state)
-      new_state != state -> print_board(new_state)
-      true -> nil
-    end
+    new_state = raw_input_to_key(data) |> act_on_key(state)
+
+    if new_state != state, do: print_game(new_state)
+
     {:noreply, new_state}
   end
 
   #
   # Main actions
   #
+  defp act_on_key(key, state) do
+    cond do
+      key in [:up, :down, :left, :right] -> move_cursor(key, state)
+      key == :space -> reveal_cell(state)
+      key == "b" -> toggle_bomb(state)
+      true -> state
+    end
+  end
+
   def move_cursor(key, state = %__MODULE__{cursor_row_col: [row, col]}) do
     %{ state | cursor_row_col:
       case key do
@@ -77,27 +77,34 @@ defmodule Mines.TUI do
     IO.write [?\r, ?\n]
   end
 
-  defp print_board(state) do
-    clear_screen
-    IO.write Formatter.format_board(state.game, state.cursor_row_col)
+  defp print_game(state) do
+    cond do
+      Game.game_over?(state.game) -> game_over(state)
+      Game.victory?(state.game) -> victory(state)
+      true -> print_board(state)
+    end
   end
 
-  defp print_victory(state) do
+  defp print_board(state) do
+    clear_screen
+    IO.write Formatter.format_game(state.game, state.cursor_row_col)
+  end
+
+  defp victory(state) do
     clear_screen
     IO.write Formatter.victory(state.game)
   end
 
-  defp print_game_over(state) do
+  defp game_over(state) do
     clear_screen
     IO.write Formatter.game_over(state.game)
   end
 
-  defp translate("\e[A"), do: :up
-  defp translate("\e[B"), do: :down
-  defp translate("\e[C"), do: :right
-  defp translate("\e[D"), do: :left
-  defp translate(" "), do: :space
-  defp translate("b"), do: :b
-  defp translate(_), do: nil
+  defp raw_input_to_key("\e[A"), do: :up
+  defp raw_input_to_key("\e[B"), do: :down
+  defp raw_input_to_key("\e[C"), do: :right
+  defp raw_input_to_key("\e[D"), do: :left
+  defp raw_input_to_key(" "),    do: :space
+  defp raw_input_to_key(raw_key), do: raw_key
 
 end

@@ -30,7 +30,7 @@ defmodule Mines.Escript do
 
   def parse_args(args) do
     case OptionParser.parse(args, strict: [size: :integer, mines: :integer]) do
-      {[], [], []} -> %Game{size: 5, num_mines: 5}
+      {[], [], []} -> %Game{size: 9, num_mines: 10}
       {[size: size, mines: mines], [], []} -> %Game{size: size, num_mines: mines}
     end
   end
