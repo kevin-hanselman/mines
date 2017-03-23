@@ -7,18 +7,18 @@ defmodule Mines.TUI.Formatter do
   # Public API
   #
   def format_game(game = %Game{}, [cursor_row, cursor_col]) do
-    [ header(game),
-      "\r\n",
-      format_board(game, [cursor_row, cursor_col])]
+    [header(game),
+     "\r\n",
+     format_board(game, [cursor_row, cursor_col])]
   end
 
   def format_board(game = %Game{}, [row_idx, col_idx]) do
     rows = Enum.chunk(game.board, game.size)
-    row = Enum.at(rows, row_idx)
-    cursor = ANSI.format([:inverse, Enum.at(row, col_idx)])
+    cursor_row = Enum.at(rows, row_idx)
+    cursor = ANSI.format([:inverse, Enum.at(cursor_row, col_idx)])
 
     rows
-    |> List.replace_at(row_idx, List.replace_at(row, col_idx, cursor))
+    |> List.replace_at(row_idx, List.replace_at(cursor_row, col_idx, cursor))
     |> format_rows
   end
 
@@ -40,14 +40,14 @@ defmodule Mines.TUI.Formatter do
   #
   defp format_rows(board_rows) do
     board_rows
-    |> Enum.map( &[" ", format_board_row(&1), "\r\n"] )
+    |> Enum.map(&[" ", format_board_row(&1), "\r\n"])
   end
 
   defp header(game = %Game{}) do
-    seconds_since_start = div(System.monotonic_time - game.start_time, 1000000000)
+    seconds_since_start = div(System.monotonic_time - game.start_time, 1_000_000_000)
     ["  ", :bright, :red,
      Game.count_remaining_bombs(game) |> to_string |> String.ljust(game.size - 1),
-     seconds_since_start |> to_string |> String.rjust(game.size),
+     seconds_since_start |> to_string |> String.rjust(game.size - 1),
      "\r\n"]
     |> ANSI.format
   end

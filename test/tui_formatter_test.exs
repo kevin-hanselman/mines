@@ -8,9 +8,8 @@ defmodule Mines.TUI.Formatter.Test do
   setup do
     {:ok,
      game: %Game{
-       board: List.flatten([ '-----', '-----', '-----', '-----', '-----' ]),
+       board: List.flatten(['-----', '-----', '-----', '-----', '-----']),
        size: 5,
-       num_mines: 4,
        mine_locs: [0, 9, 16, 17]
        #'X----'
        #'----X'
@@ -22,7 +21,8 @@ defmodule Mines.TUI.Formatter.Test do
   end
 
   test "can format a blank board with cursor in top left cell", %{game: game} do
-    board = Formatter.format_board(game, [0, 0])
+    board = game
+            |> Formatter.format_board([0, 0])
             |> to_string
     assert board == to_string(
       ["  \e[7m-\e[0m - - - -", "\r\n",
@@ -35,7 +35,7 @@ defmodule Mines.TUI.Formatter.Test do
   test "formats zeros through threes" do
     board = %Game{
       size: 5,
-      board: List.flatten([ '-----', '--0--', '--1--', '--2--', '--3--' ]),
+      board: List.flatten(['-----', '--0--', '--1--', '--2--', '--3--']),
     }
     |> Formatter.format_board([0, 0])
     |> to_string

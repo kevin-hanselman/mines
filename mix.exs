@@ -7,8 +7,8 @@ defmodule Mines.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps,
-     escript: escript]
+     deps: deps(),
+     escript: escript()]
   end
 
   # Configuration for the OTP application
@@ -16,7 +16,6 @@ defmodule Mines.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger]]
-     #mod: {Mines.App, []}]
   end
 
   defp escript do
@@ -34,6 +33,8 @@ defmodule Mines.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    []
+    [
+      {:credo, "~> 0.5", only: [:dev, :test]}
+    ]
   end
 end

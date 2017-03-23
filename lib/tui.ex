@@ -9,20 +9,18 @@ defmodule Mines.TUI do
   #
   # GenServer API
   #
-  def start_link(game = %Game{}) do
-    GenServer.start_link(__MODULE__, game)
+  def start_link([game = %Game{}, num_mines]) do
+    GenServer.start_link(__MODULE__, [game, num_mines])
   end
 
   #
   # GenServer Callbacks
   #
   # called after start_link
-  def init(game) do
-    port = Port.open({:spawn, "tty_sl -c -e"}, [:binary, :eof])
-    new_game = Game.init(game)
+  def init([empty_game = %Game{}, num_mines]) do
     state = %__MODULE__{
-              port: port,
-              game: new_game,
+              port: Port.open({:spawn, "tty_sl -c -e"}, [:binary, :eof]),
+              game: Game.init(empty_game, num_mines),
             }
     print_board(state)
     {:ok, state}
@@ -30,7 +28,7 @@ defmodule Mines.TUI do
 
   # callback for the Erlang Port
   def handle_info({_pid, {:data, data}}, state) do
-    new_state = raw_input_to_key(data) |> act_on_key(state)
+    new_state = data |> raw_input_to_key |> act_on_key(state)
 
     if new_state != state, do: print_game(new_state)
 
@@ -50,7 +48,7 @@ defmodule Mines.TUI do
   end
 
   def move_cursor(key, state = %__MODULE__{cursor_row_col: [row, col]}) do
-    %{ state | cursor_row_col:
+    %{state | cursor_row_col:
       case key do
         :up    -> [row - 1, col]
         :down  -> [row + 1, col]
@@ -62,11 +60,11 @@ defmodule Mines.TUI do
   end
 
   def reveal_cell(state = %__MODULE__{}) do
-    %{ state | game: Game.reveal(state.cursor_row_col, state.game) }
+    %{state | game: Game.reveal(state.game, state.cursor_row_col)}
   end
 
   def toggle_bomb(state = %__MODULE__{}) do
-    %{ state | game: Game.toggle_bomb(state.cursor_row_col, state.game) }
+    %{state | game: Game.toggle_bomb(state.game, state.cursor_row_col)}
   end
 
   #
@@ -86,17 +84,17 @@ defmodule Mines.TUI do
   end
 
   defp print_board(state) do
-    clear_screen
+    clear_screen()
     IO.write Formatter.format_game(state.game, state.cursor_row_col)
   end
 
   defp victory(state) do
-    clear_screen
+    clear_screen()
     IO.write Formatter.victory(state.game)
   end
 
   defp game_over(state) do
-    clear_screen
+    clear_screen()
     IO.write Formatter.game_over(state.game)
   end
 

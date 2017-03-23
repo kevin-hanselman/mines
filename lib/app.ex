@@ -23,15 +23,15 @@ defmodule Mines.Escript do
   alias Mines.Game
 
   def main(args) do
-    game = parse_args(args)
-    Mines.App.start(:normal, game)
+    {game, num_mines} = parse_args(args)
+    Mines.App.start(:normal, [game, num_mines])
     :erlang.hibernate(Kernel, :exit, [:killed])
   end
 
   def parse_args(args) do
     case OptionParser.parse(args, strict: [size: :integer, mines: :integer]) do
-      {[], [], []} -> %Game{size: 9, num_mines: 10}
-      {[size: size, mines: mines], [], []} -> %Game{size: size, num_mines: mines}
+      {[], [], []} -> {%Game{size: 9}, 10}
+      {[size: size, mines: mines], [], []} -> {%Game{size: size}, mines}
     end
   end
 end

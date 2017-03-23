@@ -1,6 +1,8 @@
 /_build
 /cover
 /deps
+/rel
+mix.lock
 erl_crash.dump
 *.ez
 
