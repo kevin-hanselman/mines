@@ -2,15 +2,17 @@
 
 A minesweeper clone in the terminal, written in Elixir.
 
-I'm building this to learn Elixir and as an exercise in test-driven development.
+![Screenshot](screenshot.png)
 
-## Building
+I built this to learn Elixir and as an exercise in test-driven development.
+
+## Build
 
 Mines is meant to be run as a standalone BEAM executable:
 
     mix escript.build
 
-## Playing Mines
+## Play
 
 To play the game with default settings, run:
 

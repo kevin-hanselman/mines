@@ -46,7 +46,7 @@ defmodule Mines.TUI.Formatter do
   defp header(game = %Game{}) do
     seconds_since_start = div(System.monotonic_time - game.start_time, 1_000_000_000)
     ["  ", :bright, :red,
-     Game.count_remaining_bombs(game) |> to_string |> String.ljust(game.size - 1),
+     Game.count_remaining_bombs(game) |> to_string |> String.ljust(game.size),
      seconds_since_start |> to_string |> String.rjust(game.size - 1),
      "\r\n"]
     |> ANSI.format
